@@ -12,9 +12,6 @@ import (
 	"http-server/app/utils"
 )
 
-var _ = net.Listen
-var _ = os.Exit
-
 func main() {
 	fmt.Println("Logs from your program will appear here!")
 
