@@ -56,16 +56,16 @@ func handleConnection(conn net.Conn) {
 		//TODO: Pass request object instead content
 
 		if request.Path == "/" {
-			controller.DefaultController(conn, content)
+			controller.DefaultController(conn, request)
 
 		} else if request.Path == "/user-agent" {
-			controller.UserAgentController(conn, content)
+			controller.UserAgentController(conn, request)
 
 		} else if strings.Contains(request.Path, "/echo/") {
-			controller.EchoController(conn, content)
+			controller.EchoController(conn, request)
 
 		} else if strings.Contains(request.Path, "/files/") {
-			controller.FilesController(conn, content)
+			controller.FilesController(conn, request)
 
 		} else {
 			res.Status404(conn)

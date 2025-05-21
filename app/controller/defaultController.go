@@ -8,12 +8,10 @@ import (
 	"http-server/app/response"
 )
 
-func DefaultController(conn net.Conn, content []string) (int, error) {
+// Return response object instead (int, error)
+func DefaultController(conn net.Conn, request request.Request) (int, error) {
 	var res response.Response
-	var req request.Request
 	res.ResponseHeader = make(response.ResponseHeader)
-
-	request := req.ParseRequest(content)
 
 	if request.RequestHeaders["Connection"] == "close" {
 		res.AddHeader("Connection", "close")

@@ -13,11 +13,9 @@ import (
 	"http-server/app/utils"
 )
 
-func FilesController(conn net.Conn, content []string) (int, error) {
-	var req request.Request
+func FilesController(conn net.Conn, request request.Request) (int, error) {
 	var res response.Response
 	res.ResponseHeader = make(response.ResponseHeader)
-	request := req.ParseRequest(content)
 
 	if request.RequestHeaders["Connection"] == "close" {
 		res.AddHeader("Connection", "close")
