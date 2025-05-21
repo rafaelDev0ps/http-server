@@ -1,15 +1,12 @@
 package controller
 
 import (
-	"fmt"
-	"net"
-
 	"http-server/app/request"
 	"http-server/app/response"
 )
 
 // Return response object instead (int, error)
-func DefaultController(conn net.Conn, request request.Request) (int, error) {
+func DefaultController(request request.Request) response.Response {
 	var res response.Response
 	res.ResponseHeader = make(response.ResponseHeader)
 
@@ -17,5 +14,8 @@ func DefaultController(conn net.Conn, request request.Request) (int, error) {
 		res.AddHeader("Connection", "close")
 	}
 
-	return fmt.Fprintf(conn, "%s%s\r\n", res.Status200(), res.FormatHeaders())
+	res.ProtocolVersion = "HTTP/1.1"
+	res.StatusCode = "200 OK"
+
+	return res
 }

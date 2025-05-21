@@ -26,14 +26,14 @@ func ReadRequestContent(conn net.Conn) ([]string, error) {
 	return content, nil
 }
 
-func ReadFile(sourcePath string) (string, error) {
+func ReadFile(sourcePath string) ([]byte, error) {
 	byt, err := os.ReadFile(sourcePath)
 	if err != nil {
 		fmt.Printf("error reading file located in %s. %v\n", sourcePath, err)
-		return "", err
+		return nil, err
 	}
 
-	return string(byt), nil
+	return byt, nil
 }
 
 func WriteFile(sourcePath string, data string) error {
