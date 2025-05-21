@@ -68,12 +68,11 @@ func handleConnection(conn net.Conn) {
 
 		} else {
 			res.StatusCode = "404 Not Found"
-			res.ProtocolVersion = "HTTP/1.1"
 		}
 
 		conn.Write(res.ParseReponse())
 
-		if request.RequestHeaders["Connection"] == "close" {
+		if request.Header["Connection"] == "close" {
 			defer conn.Close()
 			break
 		}

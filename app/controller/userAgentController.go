@@ -9,17 +9,16 @@ import (
 
 func UserAgentController(request request.Request) response.Response {
 	var res response.Response
-	res.ResponseHeader = make(response.ResponseHeader)
+	res.Header = make(map[string]string)
 
-	if request.RequestHeaders["Connection"] == "close" {
+	if request.Header["Connection"] == "close" {
 		res.AddHeader("Connection", "close")
 	}
 
 	res.AddHeader("Content-Type", "text/plain")
-	res.AddHeader("Content-Length", fmt.Sprint(len(request.RequestHeaders["User-Agent"])))
+	res.AddHeader("Content-Length", fmt.Sprint(len(request.Header["User-Agent"])))
 	res.StatusCode = "200 OK"
-	res.ProtocolVersion = "HTTP/1.1"
-	res.Body = []byte(request.RequestHeaders["User-Agent"])
+	res.Body = []byte(request.Header["User-Agent"])
 
 	return res
 }

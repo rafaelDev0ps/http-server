@@ -8,11 +8,9 @@ type Request struct {
 	Method          string
 	Path            string
 	ProtocolVersion string
-	RequestHeaders  RequestHeaders
-	RequestBody     []byte
+	Header          map[string]string
+	Body            []byte
 }
-
-type RequestHeaders map[string]string
 
 func (req *Request) ParseRequest(reqData []string) Request {
 	var request Request
@@ -20,7 +18,7 @@ func (req *Request) ParseRequest(reqData []string) Request {
 	request.Path = strings.Split(reqData[0], " ")[1]
 	request.ProtocolVersion = strings.Split(reqData[0], " ")[2]
 
-	request.RequestHeaders = make(RequestHeaders)
+	request.Header = make(map[string]string)
 
 	rawHeaders := reqData[1:]
 	if request.Method != "GET" {
@@ -31,7 +29,7 @@ func (req *Request) ParseRequest(reqData []string) Request {
 		for _, headerLine := range rawHeaders {
 			keyValue := strings.Split(headerLine, ": ")
 			if len(keyValue) > 1 {
-				request.RequestHeaders[keyValue[0]] = keyValue[1]
+				request.Header[keyValue[0]] = keyValue[1]
 			}
 		}
 	}
@@ -39,7 +37,7 @@ func (req *Request) ParseRequest(reqData []string) Request {
 	if request.Method != "GET" {
 		bodyString := reqData[len(reqData)-1] //get last line
 		if bodyString != "" {
-			request.RequestBody = []byte(bodyString)
+			request.Body = []byte(bodyString)
 		}
 	}
 
