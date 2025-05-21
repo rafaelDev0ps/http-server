@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"log/slog"
 	"net"
 	"strings"
 
@@ -33,7 +34,7 @@ func FilesController(conn net.Conn, content []string) (int, error) {
 	if method == "POST" {
 		err := utils.WriteFile(fileDir+filename, body)
 		if err != nil {
-			fmt.Println(err)
+			slog.Error(err.Error())
 			return res.Status500(conn)
 
 		}

@@ -9,9 +9,12 @@ type Request struct {
 	Path           string
 	Version        string
 	RequestHeaders RequestHeaders
+	RequestBody    []byte
 }
 
 type RequestHeaders []string
+
+// TODO: create a request parser to parse the request
 
 func (req *Request) GetMethod(reqData []string) string {
 	return strings.Split(reqData[0], " ")[0]

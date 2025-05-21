@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"log/slog"
 	"net"
 	"strings"
 
@@ -34,7 +35,7 @@ func EchoController(conn net.Conn, content []string) (int, error) {
 	if strings.Contains(headerAcceptEncoding, "gzip") {
 		compressedBody, err := utils.CompressContent(arg)
 		if err != nil {
-			fmt.Println(err)
+			slog.Error(err.Error())
 			return res.Status500(conn)
 		}
 		res.AddHeader("Content-Type", "text/plain")

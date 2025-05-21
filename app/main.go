@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log/slog"
 	"net"
 	"os"
 	"strings"
@@ -13,13 +13,13 @@ import (
 )
 
 func main() {
-	fmt.Println("Logs from your program will appear here!")
-
 	address := "0.0.0.0:4221"
+
+	slog.Info("Server started", "address", address)
 
 	listn, err := net.Listen("tcp", address)
 	if err != nil {
-		fmt.Println("Failed to bind to port 4221")
+		slog.Error("Failed to bind to address %s", "error", address)
 		os.Exit(1)
 	}
 	defer listn.Close()
@@ -27,7 +27,7 @@ func main() {
 	for {
 		conn, err := listn.Accept()
 		if err != nil {
-			fmt.Println("Error accepting connection: ", err.Error())
+			slog.Error("Error accepting connection: %v", "error", err)
 			os.Exit(1)
 		}
 
@@ -39,7 +39,7 @@ func handleConnection(conn net.Conn) {
 	for {
 		content, err := utils.ReadRequestContent(conn)
 		if err != nil {
-			fmt.Printf("error reading request content: %v\n", err)
+			slog.Error("error reading request content: %v", "error", err)
 			os.Exit(1)
 		}
 

@@ -67,11 +67,11 @@ app/
   ```
 - **File GET:**
   ```
-  curl -i http://localhost:4221/files/test.txt
+  curl -i http://localhost:4221/files/test.json
   ```
 - **File POST:**
   ```
-  curl -X POST --data '{"animal": "gorilla"}' -H "Content-Type: application/json" http://localhost:4221/files/test.txt
+  curl -X POST --data '{"animal": "gorilla"}' -H "Content-Type: application/json" http://localhost:4221/files/test.json
   curl -v --data "12345" -H "Content-Type: application/octet-stream" http://localhost:4221/files/file_123
   ```
 
