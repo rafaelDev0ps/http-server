@@ -27,21 +27,21 @@ func FilesController(request request.Request) response.Response {
 		err := utils.WriteFile(fileDir+filename, string(request.Body))
 		if err != nil {
 			slog.Error(err.Error())
-			res.StatusCode = "500 Internal Server Error"
+			res.StatusCode = response.HTTP500
 			return res
 
 		}
-		res.StatusCode = "201 Created"
+		res.StatusCode = response.HTTP201
 		return res
 	}
 
 	fileContent, err := utils.ReadFile(fileDir + filename)
 	if err != nil && errors.Is(err, fs.ErrNotExist) {
-		res.StatusCode = "404 Not Found"
+		res.StatusCode = response.HTTP404
 		return res
 	}
 
-	res.StatusCode = "200 OK"
+	res.StatusCode = response.HTTP200
 	res.AddHeader("Content-Type", "application/octet-stream")
 	res.AddHeader("Content-Length", fmt.Sprint(len(fileContent)))
 	res.Body = fileContent

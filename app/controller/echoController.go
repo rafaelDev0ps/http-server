@@ -21,19 +21,19 @@ func EchoController(request request.Request) response.Response {
 	arg := strings.TrimPrefix(request.Path, "/echo/")
 
 	if arg == "" || arg == request.Path {
-		res.StatusCode = "404 Not Found"
+		res.StatusCode = response.HTTP404
 		return res
 	}
 
 	if strings.Contains(request.Header["Accept-Encoding"], "gzip") {
 		compressedBody, err := utils.CompressContent(arg)
 		if err != nil {
-			slog.Error(err.Error())
-			res.StatusCode = "500 Internal Server Error"
+			slog.Error("error compressing content", "error", err.Error())
+			res.StatusCode = response.HTTP500
 			return res
 		}
 
-		res.StatusCode = "200 OK"
+		res.StatusCode = response.HTTP200
 		res.AddHeader("Content-Type", "text/plain")
 		res.AddHeader("Content-Encoding", "gzip")
 		res.AddHeader("Content-Length", fmt.Sprint(len(compressedBody)))
@@ -41,7 +41,7 @@ func EchoController(request request.Request) response.Response {
 		return res
 	}
 
-	res.StatusCode = "200 OK"
+	res.StatusCode = response.HTTP200
 	res.AddHeader("Content-Type", "text/plain")
 	res.AddHeader("Content-Length", fmt.Sprint(len(arg)))
 	res.Body = []byte(arg)

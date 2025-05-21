@@ -13,7 +13,7 @@ func DefaultController(request request.Request) response.Response {
 	if request.Header["Connection"] == "close" {
 		res.AddHeader("Connection", "close")
 	}
-	res.StatusCode = "200 OK"
+	res.StatusCode = response.HTTP200
 
 	return res
 }

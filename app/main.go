@@ -67,7 +67,7 @@ func handleConnection(conn net.Conn) {
 			res = controller.FilesController(request)
 
 		} else {
-			res.StatusCode = "404 Not Found"
+			res.StatusCode = response.HTTP404
 		}
 
 		conn.Write(res.ParseReponse())

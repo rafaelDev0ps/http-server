@@ -15,9 +15,9 @@ func UserAgentController(request request.Request) response.Response {
 		res.AddHeader("Connection", "close")
 	}
 
+	res.StatusCode = "200 OK"
 	res.AddHeader("Content-Type", "text/plain")
 	res.AddHeader("Content-Length", fmt.Sprint(len(request.Header["User-Agent"])))
-	res.StatusCode = "200 OK"
 	res.Body = []byte(request.Header["User-Agent"])
 
 	return res

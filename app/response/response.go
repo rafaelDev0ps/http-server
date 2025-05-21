@@ -6,6 +6,13 @@ type Response struct {
 	Body       []byte
 }
 
+const (
+	HTTP200 = "200 OK"
+	HTTP201 = "201 Created"
+	HTTP404 = "404 Not Found"
+	HTTP500 = "500 Internal Server Error"
+)
+
 func (res *Response) ParseReponse() []byte {
 	resp := []byte("HTTP/1.1 " + res.StatusCode + "\r\n")
 	if len(res.Header) > 0 {
