@@ -5,45 +5,43 @@ import (
 )
 
 type Request struct {
-	Method         string
-	Path           string
-	Version        string
-	RequestHeaders RequestHeaders
-	RequestBody    []byte
+	Method          string
+	Path            string
+	ProtocolVersion string
+	RequestHeaders  RequestHeaders
+	RequestBody     []byte
 }
 
-type RequestHeaders []string
+type RequestHeaders map[string]string
 
-// TODO: create a request parser to parse the request
+func (req *Request) ParseRequest(reqData []string) Request {
+	var request Request
+	request.Method = strings.Split(reqData[0], " ")[0]
+	request.Path = strings.Split(reqData[0], " ")[1]
+	request.ProtocolVersion = strings.Split(reqData[0], " ")[2]
 
-func (req *Request) GetMethod(reqData []string) string {
-	return strings.Split(reqData[0], " ")[0]
-}
+	request.RequestHeaders = make(RequestHeaders)
 
-func (req *Request) GetPath(reqData []string) string {
-	return strings.Split(reqData[0], " ")[1]
-}
+	rawHeaders := reqData[1:]
+	if request.Method != "GET" {
+		rawHeaders = reqData[1 : len(reqData)-2]
+	}
 
-func (req *Request) GetProtocolVersion(reqData []string) string {
-	return strings.Split(reqData[0], " ")[2]
-}
-
-func (req *Request) GetHeaders(reqData []string) RequestHeaders {
-	return reqData[1 : len(reqData)-2]
-}
-
-func (req *Request) GetHeaderValue(headers []string, fieldName string) string {
-	var acceptEncoding string
-	for i := range len(headers) {
-		if strings.Contains(headers[i], fieldName) {
-			acceptEncoding = headers[i]
-			return strings.Split(acceptEncoding, ": ")[1]
+	if len(rawHeaders) > 0 {
+		for _, headerLine := range rawHeaders {
+			keyValue := strings.Split(headerLine, ": ")
+			if len(keyValue) > 1 {
+				request.RequestHeaders[keyValue[0]] = keyValue[1]
+			}
 		}
 	}
 
-	return ""
-}
+	if request.Method != "GET" {
+		bodyString := reqData[len(reqData)-1] //get last line
+		if bodyString != "" {
+			request.RequestBody = []byte(bodyString)
+		}
+	}
 
-func (req *Request) GetBody(reqData []string) string {
-	return reqData[len(reqData)-1]
+	return request
 }

@@ -52,25 +52,26 @@ func handleConnection(conn net.Conn) {
 		var req request.Request
 		var res response.Response
 
-		path := req.GetPath(content)
+		request := req.ParseRequest(content)
+		//TODO: Pass request object instead content
 
-		if path == "/" {
+		if request.Path == "/" {
 			controller.DefaultController(conn, content)
 
-		} else if path == "/user-agent" {
+		} else if request.Path == "/user-agent" {
 			controller.UserAgentController(conn, content)
 
-		} else if strings.Contains(path, "/echo/") {
+		} else if strings.Contains(request.Path, "/echo/") {
 			controller.EchoController(conn, content)
 
-		} else if strings.Contains(path, "/files/") {
+		} else if strings.Contains(request.Path, "/files/") {
 			controller.FilesController(conn, content)
 
 		} else {
 			res.Status404(conn)
 		}
 
-		if req.GetHeaderValue(req.GetHeaders(content), "Connection") == "close" {
+		if request.RequestHeaders["Connection"] == "close" {
 			defer conn.Close()
 			break
 		}

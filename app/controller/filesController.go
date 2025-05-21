@@ -17,22 +17,17 @@ func FilesController(conn net.Conn, content []string) (int, error) {
 	var req request.Request
 	var res response.Response
 	res.ResponseHeader = make(response.ResponseHeader)
+	request := req.ParseRequest(content)
 
-	path := req.GetPath(content)
-	method := req.GetMethod(content)
-	body := req.GetBody(content)
-
-	headers := req.GetHeaders(content)
-
-	if req.GetHeaderValue(headers, "Connection") == "close" {
+	if request.RequestHeaders["Connection"] == "close" {
 		res.AddHeader("Connection", "close")
 	}
 
-	filename := strings.TrimPrefix(path, "/files/")
+	filename := strings.TrimPrefix(request.Path, "/files/")
 	fileDir := "/tmp/"
 
-	if method == "POST" {
-		err := utils.WriteFile(fileDir+filename, body)
+	if request.Method == "POST" {
+		err := utils.WriteFile(fileDir+filename, string(request.RequestBody))
 		if err != nil {
 			slog.Error(err.Error())
 			return res.Status500(conn)

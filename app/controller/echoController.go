@@ -16,23 +16,19 @@ func EchoController(conn net.Conn, content []string) (int, error) {
 	var res response.Response
 	res.ResponseHeader = make(response.ResponseHeader)
 
-	path := req.GetPath(content)
+	request := req.ParseRequest(content)
 
-	headers := req.GetHeaders(content)
-
-	if req.GetHeaderValue(headers, "Connection") == "close" {
+	if request.RequestHeaders["Connection"] == "close" {
 		res.AddHeader("Connection", "close")
 	}
 
-	arg := strings.TrimPrefix(path, "/echo/")
+	arg := strings.TrimPrefix(request.Path, "/echo/")
 
-	if arg == "" || arg == path {
+	if arg == "" || arg == request.Path {
 		return res.Status404(conn)
 	}
 
-	headerAcceptEncoding := req.GetHeaderValue(headers, "Accept-Encoding")
-
-	if strings.Contains(headerAcceptEncoding, "gzip") {
+	if strings.Contains(request.RequestHeaders["Accept-Encoding"], "gzip") {
 		compressedBody, err := utils.CompressContent(arg)
 		if err != nil {
 			slog.Error(err.Error())
