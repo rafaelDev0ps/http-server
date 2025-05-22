@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"compress/gzip"
 	"errors"
-	"fmt"
 	"io"
+	"log/slog"
 	"net"
 	"os"
 	"strings"
@@ -18,7 +18,7 @@ func ReadRequestContent(conn net.Conn) ([]string, error) {
 	_, err := conn.Read(buffer)
 	if err != nil {
 		if !errors.Is(err, io.EOF) {
-			fmt.Printf("error reading request content: %v\n", err)
+			slog.Error("error reading request content: %v", "error", err)
 			return nil, err
 		}
 	}
@@ -29,7 +29,7 @@ func ReadRequestContent(conn net.Conn) ([]string, error) {
 func ReadFile(sourcePath string) ([]byte, error) {
 	byt, err := os.ReadFile(sourcePath)
 	if err != nil {
-		fmt.Printf("error reading file located in %s. %v\n", sourcePath, err)
+		slog.Error("error reading file located in %s. %s", sourcePath, err)
 		return nil, err
 	}
 
@@ -38,9 +38,9 @@ func ReadFile(sourcePath string) ([]byte, error) {
 
 func WriteFile(sourcePath string, data string) error {
 	dataBytes := bytes.Trim([]byte(data), "\x00")
-	err := os.WriteFile(sourcePath, dataBytes, 0666)
+	err := os.WriteFile(sourcePath, dataBytes, 0644)
 	if err != nil {
-		fmt.Printf("error writing data into the file %s. %v\n", sourcePath, err)
+		slog.Error("error writing data into the file %s. %v", sourcePath, err)
 		return err
 	}
 	return nil
@@ -52,13 +52,13 @@ func CompressContent(content string) ([]byte, error) {
 
 	_, err := writer.Write([]byte(content))
 	if err != nil {
-		fmt.Printf("error compressing content: %v\n", err)
+		slog.Error("error compressing content: %v", "error", err)
 		return nil, err
 	}
 
 	err = writer.Close()
 	if err != nil {
-		fmt.Printf("error closing writer compression: %v\n", err)
+		slog.Error("error closing writer compression: %v", "error", err)
 		return nil, err
 	}
 

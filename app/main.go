@@ -1,10 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"net"
 	"os"
-	"strings"
+	"regexp"
 
 	"http-server/app/controller"
 	"http-server/app/request"
@@ -12,27 +13,26 @@ import (
 	"http-server/app/utils"
 )
 
-func main() {
-	address := "0.0.0.0:4221"
+type Controller func(request request.Request) response.Response
 
-	slog.Info("Server started", "address", address)
+type Route map[string]Controller
 
-	listn, err := net.Listen("tcp", address)
-	if err != nil {
-		slog.Error("Failed to bind to address %s", "error", address)
-		os.Exit(1)
-	}
-	defer listn.Close()
+var routes Route = map[string]Controller{
+	"/":           controller.DefaultController,
+	"/user-agent": controller.UserAgentController,
+	"/echo/*":     controller.EchoController,
+	"/files/*":    controller.FilesController,
+}
 
-	for {
-		conn, err := listn.Accept()
-		if err != nil {
-			slog.Error("Error accepting connection: %v", "error", err)
-			os.Exit(1)
+// simple validation, enhance in the future
+func selectRoutePath(path string) (Controller, error) {
+	regexRule, _ := regexp.Compile("^" + path)
+	for route, ctrl := range routes {
+		if regexRule.MatchString(route) {
+			return ctrl, nil
 		}
-
-		go handleConnection(conn)
 	}
+	return nil, fmt.Errorf("route not found")
 }
 
 func handleConnection(conn net.Conn) {
@@ -54,20 +54,13 @@ func handleConnection(conn net.Conn) {
 
 		request := req.ParseRequest(content)
 
-		if request.Path == "/" {
-			res = controller.DefaultController(request)
-
-		} else if request.Path == "/user-agent" {
-			res = controller.UserAgentController(request)
-
-		} else if strings.Contains(request.Path, "/echo/") {
-			res = controller.EchoController(request)
-
-		} else if strings.Contains(request.Path, "/files/") {
-			res = controller.FilesController(request)
-
-		} else {
+		ctrl, err := selectRoutePath(request.Path)
+		if err != nil {
 			res.StatusCode = response.HTTP404
+		}
+
+		if ctrl != nil {
+			res = ctrl(request)
 		}
 
 		conn.Write(res.ParseReponse())
@@ -76,5 +69,28 @@ func handleConnection(conn net.Conn) {
 			defer conn.Close()
 			break
 		}
+	}
+}
+
+func main() {
+	address := "0.0.0.0:4221"
+
+	slog.Info("Server started", "address", address)
+
+	listn, err := net.Listen("tcp", address)
+	if err != nil {
+		slog.Error("Failed to bind to address %s", "error", address)
+		os.Exit(1)
+	}
+	defer listn.Close()
+
+	for {
+		conn, err := listn.Accept()
+		if err != nil {
+			slog.Error("Error accepting connection: %v", "error", err)
+			os.Exit(1)
+		}
+
+		go handleConnection(conn)
 	}
 }
