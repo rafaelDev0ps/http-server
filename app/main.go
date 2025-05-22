@@ -19,7 +19,6 @@ type Controller func(request request.Request) response.Response
 type Route map[string]Controller
 
 var routes Route = map[string]Controller{
-	"/":           controller.DefaultController,
 	"/user-agent": controller.UserAgentController,
 	"/echo/*":     controller.EchoController,
 	"/files/*":    controller.FilesController,
@@ -27,9 +26,12 @@ var routes Route = map[string]Controller{
 
 // simple validation, enhance in the future
 func selectRoutePath(path string) (Controller, error) {
-	regexRule, _ := regexp.Compile("^" + path)
+	if path == "" || path == "/" {
+		return controller.DefaultController, nil
+	}
 	for route, ctrl := range routes {
-		if regexRule.MatchString(route) {
+		regexRule, _ := regexp.Compile("^" + route)
+		if regexRule.MatchString(path) {
 			return ctrl, nil
 		}
 	}
@@ -64,6 +66,7 @@ func handleConnection(conn net.Conn) {
 			res = ctrl(request)
 		}
 
+		fmt.Printf("%s", res.ParseReponse())
 		conn.Write(res.ParseReponse())
 
 		if request.Header["Connection"] == "close" {
