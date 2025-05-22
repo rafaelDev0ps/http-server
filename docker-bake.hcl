@@ -8,6 +8,6 @@ target "server" {
     args = {
         PORT = "8000"
     }
-    platforms = ["linux/amd64", "linux/arm64"]
+    platforms = ["linux/arm64"]
     tags = ["rafaeldev0ps/laboratory:http-server"]
 }
