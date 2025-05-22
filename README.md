@@ -53,6 +53,12 @@ app/
    ```
 
 3. The server will listen on `0.0.0.0:4221` by default.
+  
+Running on docker 
+```sh
+docker buildx bake
+docker run -d --name http-server -p 8000:8000 rafaeldev0ps/laboratory:http-server
+```
 
 ## Example Requests
 
