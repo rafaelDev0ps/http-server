@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log/slog"
 	"net"
@@ -73,13 +74,16 @@ func handleConnection(conn net.Conn) {
 }
 
 func main() {
-	address := "0.0.0.0:4221"
+	port := flag.String("port", "4221", "HTTP server port")
+	flag.Parse()
 
-	slog.Info("Server started", "address", address)
+	address := "0.0.0.0:" + *port
+
+	slog.Info("Server started on 0.0.0.0", "port", *port)
 
 	listn, err := net.Listen("tcp", address)
 	if err != nil {
-		slog.Error("Failed to bind to address %s", "error", address)
+		slog.Error("Failed to bind to", "address", address)
 		os.Exit(1)
 	}
 	defer listn.Close()

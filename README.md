@@ -49,16 +49,16 @@ app/
 2. Run the server:
 
    ```sh
-   go run app/main.go
+   go run app/main.go -port=8000
    ```
 
-3. The server will listen on `0.0.0.0:4221`.
+3. The server will listen on `0.0.0.0:4221` by default.
 
 ## Example Requests
 
 - **Echo:**
   ```
-  curl http://localhost:4221/echo/hello
+  curl -v http://localhost:4221/echo/hello
   curl -v -H "Accept-Encoding: gzip" http://localhost:4221/echo/abc
   ```
 - **User-Agent:**
@@ -67,11 +67,11 @@ app/
   ```
 - **File GET:**
   ```
-  curl -i http://localhost:4221/files/test.json
+  curl -i -v http://localhost:4221/files/test.json
   ```
 - **File POST:**
   ```
-  curl -X POST --data '{"animal": "gorilla"}' -H "Content-Type: application/json" http://localhost:4221/files/test.json
+  curl -v -X POST --data '{"animal": "gorilla"}' -H "Content-Type: application/json" http://localhost:4221/files/test.json
   curl -v --data "12345" -H "Content-Type: application/octet-stream" http://localhost:4221/files/file_123
   ```
 
