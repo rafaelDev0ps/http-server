@@ -6,7 +6,7 @@ COPY go.mod ./
 
 COPY app ./app
 
-RUN go mod download
+# RUN go mod download  # no module dependencies to download
 
 RUN CGO_ENABLED=0 GOOS=linux go build -C ./app -o /usr/local/bin/server
 
