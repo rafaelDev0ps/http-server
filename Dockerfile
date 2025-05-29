@@ -8,7 +8,11 @@ RUN go mod download
 
 COPY app ./app
 
-RUN CGO_ENABLED=0 GOOS=linux go build -C ./app -o ../server
+RUN CGO_ENABLED=0 GOOS=linux go build -C ./app -o /usr/local/bin/server
+
+# FROM gcr.io/distroless/static
+
+# COPY --from=build --chown=nonroot:nonroot /usr/local/bin/server /usr/local/bin/server
 
 ARG PORT="4221"
 
@@ -16,4 +20,4 @@ ENV HTTP_PORT=${PORT}
 
 EXPOSE ${PORT}
 
-CMD ./server -port=${HTTP_PORT}
+ENTRYPOINT server -port=${HTTP_PORT}
