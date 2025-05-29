@@ -4,9 +4,9 @@ WORKDIR /app
 
 COPY go.mod ./
 
-RUN go mod download
-
 COPY app ./app
+
+RUN go mod download
 
 RUN CGO_ENABLED=0 GOOS=linux go build -C ./app -o /usr/local/bin/server
 
